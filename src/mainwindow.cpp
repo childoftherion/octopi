@@ -1571,7 +1571,7 @@ void MainWindow::onAURShowPKGBUILDDiff()
           QString date = match.captured(QStringLiteral("date"));
           QDateTime diffDate = QDateTime::fromString(date, QStringLiteral("yyyy-MM-dd HH:mm:ss tt"));
 
-          if (diffDate < iDate) break;
+          if (diffDate < iDate || (!iDate.isValid() && commits.count() == 2)) break;
 
         }
       }
