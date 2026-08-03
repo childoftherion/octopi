@@ -1,5 +1,7 @@
 [Desktop Entry]
 Name=Octopi Notifier
+Comment=Get notified when package updates are available
+Comment[ru]=Уведомления о доступных обновлениях пакетов
 Icon=octopi
 Exec=/usr/bin/octopi-notifier
 Terminal=false

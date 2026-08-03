@@ -1,5 +1,7 @@
 [Desktop Entry]
 Name=Octopi Repository Editor
+Comment=Manage the package repositories used by the system
+Comment[ru]=Настройка списка репозиториев пакетов
 Icon=octopi
 Exec=/usr/bin/octopi-repoeditor
 Terminal=false

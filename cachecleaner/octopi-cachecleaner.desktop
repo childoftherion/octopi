@@ -1,5 +1,7 @@
 [Desktop Entry]
 Name=Octopi CacheCleaner
+Comment=Free disk space by removing old packages from the cache
+Comment[ru]=Удаление старых пакетов из кэша и освобождение места на диске
 Icon=octopi
 Exec=/usr/bin/octopi-cachecleaner
 Terminal=false
