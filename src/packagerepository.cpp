@@ -62,7 +62,7 @@ struct EndResetModel {
   }
 };
 
-void PackageRepository::setData(QList<PackageListData>*const listOfPackages, const QSet<QString>& unrequiredPackages, const QSet<QString>& ignoredPackages)
+/*void PackageRepository::setData(QList<PackageListData>*const listOfPackages, const QSet<QString>& unrequiredPackages, const QSet<QString>& ignoredPackages)
 {
   std::for_each(m_dependingModels.begin(), m_dependingModels.end(), BeginResetModel());
 
@@ -87,6 +87,57 @@ void PackageRepository::setData(QList<PackageListData>*const listOfPackages, con
 
   std::sort(m_listOfPackages.begin(), m_listOfPackages.end(), TSort());
   std::for_each(m_dependingModels.begin(), m_dependingModels.end(), EndResetModel());
+}*/
+
+void PackageRepository::setData(
+    QList<PackageListData>* const listOfPackages,
+    const QSet<QString>& unrequiredPackages,
+    const QSet<QString>& ignoredPackages)
+{
+  std::for_each(
+      m_dependingModels.begin(),
+      m_dependingModels.end(),
+      BeginResetModel());
+
+  for (QList<Group*>::const_iterator it = m_listOfGroups.constBegin();
+       it != m_listOfGroups.constEnd(); ++it)
+  {
+    if (*it != nullptr)
+      (*it)->invalidateList();
+  }
+
+  for (TListOfPackages::const_iterator it = m_listOfPackages.constBegin();
+       it != m_listOfPackages.constEnd(); ++it)
+  {
+    delete *it;
+  }
+
+  m_listOfAURPackages.clear();
+  m_listOfPackages.clear();
+
+  m_listOfPackages.reserve(listOfPackages->size());
+
+  for (PackageListData& data : *listOfPackages)
+  {
+    if (ignoredPackages.contains(data.name))
+      data.status = ectn_IGNORED;
+
+    m_listOfPackages.push_back(
+        new PackageData(
+            data,
+            !unrequiredPackages.contains(data.name),
+            false));
+  }
+
+  std::sort(
+      m_listOfPackages.begin(),
+      m_listOfPackages.end(),
+      TSort());
+
+  std::for_each(
+      m_dependingModels.begin(),
+      m_dependingModels.end(),
+      EndResetModel());
 }
 
 void PackageRepository::setAURData(const QList<PackageListData>*const listOfForeignPackages,

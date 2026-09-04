@@ -375,7 +375,7 @@ QSet<QString>* Package::getUnrequiredPackageList()
   if (SettingsManager::hasPacmanBackend())
   {
     QString unrequiredPkgList = QString::fromUtf8(UnixCommand::getUnrequiredPackageList());
-    QStringList packageTuples = unrequiredPkgList.split(QRegularExpression(QStringLiteral("\\n")), Qt::SkipEmptyParts);
+    QStringList packageTuples = unrequiredPkgList.split(QLatin1Char('\n'), Qt::SkipEmptyParts);
 
     for(auto packageTuple: packageTuples)
     {
@@ -410,7 +410,7 @@ QStringList *Package::getOutdatedStringList()
   if (SettingsManager::hasPacmanBackend())
   {
     QString outPkgList = QString::fromUtf8(UnixCommand::getOutdatedPackageList());
-    QStringList packageTuples = outPkgList.split(QRegularExpression(QStringLiteral("\\n")), Qt::SkipEmptyParts);
+    QStringList packageTuples = outPkgList.split(QLatin1Char('\n'), Qt::SkipEmptyParts);
     QStringList ignorePkgList = UnixCommand::getIgnorePkgsFromPacmanConf();
 
     for(auto packageTuple: packageTuples)
@@ -499,7 +499,7 @@ QStringList *Package::getOutdatedAURStringList()
 
   //qDebug() << "OutPkgList: " << outPkgList;
 
-  QStringList packageTuples = outPkgList.split(QRegularExpression(QStringLiteral("\\n")), Qt::SkipEmptyParts);
+  QStringList packageTuples = outPkgList.split(QLatin1Char('\n'), Qt::SkipEmptyParts);
 
   //qDebug() << "PackageTuples: " << packageTuples;
 
@@ -579,7 +579,7 @@ QStringList *Package::getOutdatedAURStringList()
 QStringList *Package::getPackageGroups()
 {
   QString packagesFromGroup = QString::fromUtf8(UnixCommand::getPackageGroups());
-  QStringList packageTuples = packagesFromGroup.split(QRegularExpression(QStringLiteral("\\n")), Qt::SkipEmptyParts);
+  QStringList packageTuples = packagesFromGroup.split(QLatin1Char('\n'), Qt::SkipEmptyParts);
   QStringList * res = new QStringList();
 
   for(auto packageTuple: packageTuples)
@@ -602,7 +602,7 @@ QStringList *Package::getPackageGroups()
 QStringList *Package::getPackagesOfGroup(const QString &groupName)
 {
   QString packagesFromGroup = QString::fromUtf8(UnixCommand::getPackagesFromGroup(groupName));
-  QStringList packageTuples = packagesFromGroup.split(QRegularExpression(QStringLiteral("\\n")), Qt::SkipEmptyParts);
+  QStringList packageTuples = packagesFromGroup.split(QLatin1Char('\n'), Qt::SkipEmptyParts);
   QStringList * res = new QStringList();
 
   for(auto packageTuple: packageTuples)
@@ -621,7 +621,7 @@ QStringList *Package::getPackagesOfGroup(const QString &groupName)
 QList<PackageListData> *Package::getTargetUpgradeList(const QString &pkgName)
 {
   QString targets = QString::fromUtf8(UnixCommand::getTargetUpgradeList(pkgName));
-  QStringList packageTuples = targets.split(QRegularExpression(QStringLiteral("\\n")), Qt::SkipEmptyParts);
+  QStringList packageTuples = targets.split(QLatin1Char('\n'), Qt::SkipEmptyParts);
   QList<PackageListData> *res = new QList<PackageListData>();
   packageTuples.sort();
 
@@ -656,7 +656,7 @@ QList<PackageListData> *Package::getTargetUpgradeList(const QString &pkgName)
 QStringList *Package::getTargetRemovalList(const QString &pkgName, const QString &removeCommand)
 {
   QString targets = QString::fromUtf8(UnixCommand::getTargetRemovalList(pkgName, removeCommand));
-  QStringList packageTuples = targets.split(QRegularExpression(QStringLiteral("\\n")), Qt::SkipEmptyParts);
+  QStringList packageTuples = targets.split(QLatin1Char('\n'), Qt::SkipEmptyParts);
   QStringList * res = new QStringList();
 
   for(auto packageTuple: packageTuples)
@@ -678,7 +678,7 @@ QList<PackageListData> *Package::getForeignPackageList(QSet<QString> *ignoredPac
   if (SettingsManager::hasPacmanBackend())
   {
     QString foreignPkgList = QString::fromUtf8(UnixCommand::getForeignPackageList());
-    QStringList packageTuples = foreignPkgList.split(QRegularExpression(QStringLiteral("\\n")), Qt::SkipEmptyParts);
+    QStringList packageTuples = foreignPkgList.split(QLatin1Char('\n'), Qt::SkipEmptyParts);
 
     for(auto packageTuple: packageTuples)
     {
@@ -728,7 +728,7 @@ QList<PackageListData> *Package::getForeignPackageList(QSet<QString> *ignoredPac
 /*
  * Retrieves the list of all available packages in the database (installed + non-installed)
  */
-QList<PackageListData> * Package::getPackageList(const QString &packageName, const QHash<QString, QString> *checkUpdatesOutdatedPackages)
+/*QList<PackageListData> * Package::getPackageList(const QString &packageName, const QHash<QString, QString> *checkUpdatesOutdatedPackages)
 {
 #ifndef ALPM_BACKEND
   Q_UNUSED(checkUpdatesOutdatedPackages)
@@ -744,7 +744,7 @@ QList<PackageListData> * Package::getPackageList(const QString &packageName, con
     QString pkgName, pkgRepository, pkgVersion, pkgDescription, pkgOutVersion;
     PackageStatus pkgStatus;
     QString pkgList = QString::fromUtf8(UnixCommand::getPackageList(packageName));
-    QStringList packageTuples = pkgList.split(QRegularExpression(QStringLiteral("\\n")), Qt::SkipEmptyParts);
+    QStringList packageTuples = pkgList.split(QLatin1Char('\n'), Qt::SkipEmptyParts);
 
     if(!pkgList.isEmpty())
     {
@@ -929,6 +929,413 @@ QList<PackageListData> * Package::getPackageList(const QString &packageName, con
 #endif
 
   return res;
+}*/
+
+/*
+ * NEW CODE
+ * Retrieves the list of all available packages in the database (installed + non-installed)
+ */
+QList<PackageListData> * Package::getPackageList(
+        const QString &packageName,
+        const QHash<QString, QString> *checkUpdatesOutdatedPackages)
+{
+#ifndef ALPM_BACKEND
+  Q_UNUSED(checkUpdatesOutdatedPackages)
+#endif
+
+  // archlinuxfr/yaourt 1.2.2-1 [installed]
+  //
+  // A pacman wrapper with extended features and AUR support
+  //
+  // community/libfm 1.1.0-4 (lxde) [installed: 1.1.0-3]
+
+  QList<PackageListData> *res = new QList<PackageListData>();
+
+  if (SettingsManager::hasPacmanBackend())
+  {
+    QString pkgName;
+    QString pkgRepository;
+    QString pkgVersion;
+    QString pkgDescription;
+    QString pkgOutVersion;
+
+    PackageStatus pkgStatus;
+
+    QString pkgList =
+        QString::fromUtf8(
+            UnixCommand::getPackageList(packageName));
+
+    QStringList packageTuples =
+        pkgList.split(
+            QLatin1Char('\n'),
+            Qt::SkipEmptyParts);
+
+    if (!pkgList.isEmpty())
+    {
+      // Avoid repeated QList reallocations.
+      res->reserve(packageTuples.size());
+
+      pkgDescription.clear();
+
+      for (const QString &packageTuple : packageTuples)
+      {
+        // A package line starts at column zero.
+        if (!packageTuple.isEmpty() &&
+            !packageTuple.at(0).isSpace())
+        {
+          // Do we already have a description?
+          if (!pkgDescription.isEmpty())
+          {
+            pkgDescription =
+                pkgName + QLatin1Char(' ') + pkgDescription;
+
+            PackageListData pld(
+                pkgName,
+                pkgRepository,
+                pkgVersion,
+                pkgDescription,
+                pkgStatus,
+                pkgOutVersion);
+
+            if (packageName.isEmpty() ||
+                pkgName == packageName)
+            {
+              res->append(pld);
+            }
+
+            pkgDescription.clear();
+          }
+
+          /*
+                     * Get repository, name and version without
+                     * creating a QStringList for every package.
+                     *
+                     * Original:
+                     *
+                     * QStringList parts =
+                     *     packageTuple.split(QLatin1Char(' '));
+                     *
+                     * This creates temporary strings/list data
+                     * for every package.
+                     */
+
+          const int space1 =
+              packageTuple.indexOf(QLatin1Char(' '));
+
+          if (space1 <= 0)
+            continue;
+
+          const int slash =
+              packageTuple.indexOf(QLatin1Char('/'));
+
+          if (slash <= 0 || slash >= space1)
+            continue;
+
+          pkgRepository =
+              packageTuple.left(slash);
+
+          pkgName =
+              packageTuple.mid(
+                  slash + 1,
+                  space1 - slash - 1);
+
+          // Get version without splitting the entire line.
+          const int space2 =
+              packageTuple.indexOf(
+                  QLatin1Char(' '),
+                  space1 + 1);
+
+          if (space2 == -1)
+          {
+            pkgVersion =
+                packageTuple.mid(space1 + 1);
+          }
+          else
+          {
+            pkgVersion =
+                packageTuple.mid(
+                    space1 + 1,
+                    space2 - space1 - 1);
+          }
+
+          /*
+                     * Check installation status with ONE search.
+                     *
+                     * Both:
+                     *
+                     *   [installed]
+                     *   [installed: 1.2.3]
+                     *
+                     * start with "[installed".
+                     */
+          const int installedPos =
+              packageTuple.indexOf(
+                  QLatin1String("[installed"));
+
+          if (installedPos == -1)
+          {
+            // This is an uninstalled package.
+            pkgStatus = ectn_NON_INSTALLED;
+            pkgOutVersion.clear();
+          }
+          else if (
+              packageTuple.size() > installedPos + 10 &&
+              packageTuple.at(installedPos + 10) ==
+                  QLatin1Char(']'))
+          {
+            // This is an installed package.
+            pkgStatus = ectn_INSTALLED;
+            pkgOutVersion.clear();
+          }
+          else
+          {
+            // This is an outdated installed package.
+            pkgStatus = ectn_OUTDATED;
+
+            const int versionStart =
+                installedPos + 11;
+
+            const int versionEnd =
+                packageTuple.indexOf(
+                    QLatin1Char(']'),
+                    versionStart);
+
+            if (versionEnd > versionStart)
+            {
+              pkgOutVersion =
+                  packageTuple.mid(
+                                  versionStart,
+                                  versionEnd - versionStart)
+                      .trimmed();
+            }
+            else
+            {
+              pkgOutVersion.clear();
+            }
+          }
+        }
+        else
+        {
+          // This is a description.
+
+          const QString description =
+              packageTuple.trimmed();
+
+          if (!description.isEmpty())
+          {
+            pkgDescription += description;
+          }
+          else
+          {
+            pkgDescription += QLatin1Char(' ');
+          }
+        }
+      }
+
+      // And adds the very last package...
+      pkgDescription =
+          pkgName + QLatin1Char(' ') + pkgDescription;
+
+      PackageListData pld(
+          pkgName,
+          pkgRepository,
+          pkgVersion,
+          pkgDescription,
+          pkgStatus,
+          pkgOutVersion);
+
+      if (packageName.isEmpty() ||
+          pkgName == packageName)
+      {
+        res->append(pld);
+      }
+    }
+  }
+
+#ifdef ALPM_BACKEND
+  else
+  {
+    QString pkgName;
+    QString pkgRepository;
+    QString pkgVersion;
+    QString pkgDescription;
+    QString pkgOutVersion;
+    QString pkgSize;
+    QString pkgISize;
+    QString pkgBDate;
+    QString pkgIDate;
+    QString pkgLicense;
+    QString pkgInstallReason;
+
+    PackageStatus pkgStatus;
+
+    double pkgDownSize = 0;
+    double pkgInstSize = 0;
+    double pkgBuildDate = 0;
+    double pkgInstallDate = 0;
+
+    QStringList pkgList =
+        AlpmBackend::getPackageList();
+
+    bool ok;
+
+    const bool hasOutdatedPackages =
+        checkUpdatesOutdatedPackages->count() > 0;
+
+    pkgDescription.clear();
+
+    res->reserve(pkgList.size());
+
+    for (const QString &packageTuple : pkgList)
+    {
+      if (!packageTuple.isEmpty() &&
+          !packageTuple.at(0).isSpace())
+      {
+        // Do we already have a description?
+        if (!pkgDescription.isEmpty())
+        {
+          pkgDescription =
+              pkgName + QLatin1Char(' ') + pkgDescription;
+
+          PackageListData pld(
+              pkgName,
+              pkgRepository,
+              pkgVersion,
+              pkgDescription,
+              pkgStatus,
+              pkgDownSize,
+              pkgInstSize,
+              pkgBuildDate,
+              pkgInstallDate,
+              pkgLicense,
+              pkgInstallReason,
+              pkgOutVersion);
+
+          res->append(pld);
+
+          pkgDescription.clear();
+        }
+
+        /*
+                 * ALPM backend uses:
+                 *
+                 * status<o'o>name<o'o>repository...
+                 *
+                 * Keep the existing parsing here to avoid changing
+                 * the backend's data format/structure.
+                 */
+        QStringList parts =
+            packageTuple.split(
+                QStringLiteral("<o'o>"));
+
+        pkgRepository = parts[1];
+        pkgName = parts[2];
+        pkgVersion = parts[3];
+
+        pkgSize = parts[5];
+        pkgISize = parts[6];
+        pkgBDate = parts[7];
+        pkgIDate = parts[8];
+        pkgLicense = parts[9];
+        pkgInstallReason = parts[10];
+
+        pkgDownSize =
+            pkgSize.toLong(&ok);
+
+        pkgInstSize =
+            pkgISize.toLong(&ok);
+
+        pkgBuildDate =
+            pkgBDate.toLong(&ok);
+
+        pkgInstallDate =
+            pkgIDate.toLong(&ok);
+
+        if (parts[0] == QLatin1Char('i'))
+        {
+          // This is an installed package.
+
+          if (!hasOutdatedPackages)
+          {
+            pkgStatus = ectn_INSTALLED;
+            pkgOutVersion.clear();
+          }
+          else
+          {
+            const QString newVersion =
+                checkUpdatesOutdatedPackages->value(
+                    pkgName);
+
+            if (newVersion.isEmpty())
+            {
+              pkgStatus = ectn_INSTALLED;
+              pkgOutVersion.clear();
+            }
+            else
+            {
+              pkgStatus = ectn_OUTDATED;
+
+              pkgOutVersion = pkgVersion;
+              pkgVersion = newVersion;
+            }
+          }
+        }
+        else if (parts[0] == QLatin1String("o"))
+        {
+          // This is an outdated installed package.
+
+          pkgStatus = ectn_OUTDATED;
+          pkgOutVersion = parts[4];
+        }
+        else if (parts[0] == QLatin1Char('n'))
+        {
+          // This is an uninstalled package.
+
+          pkgStatus = ectn_NON_INSTALLED;
+          pkgOutVersion.clear();
+        }
+      }
+      else
+      {
+        // This is a description.
+
+        const QString description =
+            packageTuple.trimmed();
+
+        if (!description.isEmpty())
+        {
+          pkgDescription += description;
+        }
+        else
+        {
+          pkgDescription += QLatin1Char(' ');
+        }
+      }
+    }
+
+    // And adds the very last package...
+    pkgDescription =
+        pkgName + QLatin1Char(' ') + pkgDescription;
+
+    PackageListData pld(
+        pkgName,
+        pkgRepository,
+        pkgVersion,
+        pkgDescription,
+        pkgStatus,
+        pkgDownSize,
+        pkgInstSize,
+        pkgBuildDate,
+        pkgInstallDate,
+        pkgLicense,
+        pkgInstallReason,
+        pkgOutVersion);
+
+    res->append(pld);
+  }
+#endif
+
+  return res;
 }
 
 /*
@@ -962,7 +1369,7 @@ QList<PackageListData> * Package::getForeignToolPackageList(const QString &searc
   auxSearchString.remove(QLatin1Char('^'));
   auxSearchString.remove(QLatin1Char('$'));
   QString pkgList = QString::fromUtf8(UnixCommand::getAURPackageList(auxSearchString));
-  QStringList packageTuples = pkgList.split(QRegularExpression(QStringLiteral("\\n")), Qt::SkipEmptyParts);
+  QStringList packageTuples = pkgList.split(QLatin1Char('\n') /*QRegularExpression(QStringLiteral("\\n"))*/, Qt::SkipEmptyParts);
 
   if (aurTool == ctn_KCP_TOOL)
   {

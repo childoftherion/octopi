@@ -2423,6 +2423,15 @@ void MainWindow::tvPackagesSelectionChanged(const QItemSelection&, const QItemSe
 
   m_lblTotalCounters->setText(text);
   m_lblSelCounter->setText(newMessage);
+
+  QTreeView *const tvPkgFileList = ui->twProperties->getTvPkgFileList();
+  if (tvPkgFileList)
+  {
+    if (QStandardItemModel *model = qobject_cast<QStandardItemModel *>(tvPkgFileList->model()))
+    {
+      model->clear();
+    }
+  }
 }
 
 /*

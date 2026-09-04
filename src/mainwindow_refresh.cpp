@@ -387,7 +387,7 @@ void MainWindow::buildPackagesFromGroupList(const QString &group)
 {
   CPUIntensiveComputing cic;
   const QList<QString>*const list = m_listOfPackagesFromGroup.get();
-  QList<QString>::const_iterator it = list->begin();
+  //QList<QString>::const_iterator it = list->begin();
 
   m_progressWidget->setRange(0, list->count());
   m_progressWidget->setValue(0);
@@ -396,7 +396,7 @@ void MainWindow::buildPackagesFromGroupList(const QString &group)
   int installedCount = 0;
   int counter=0;
 
-  while(it != list->end())
+  /*while(it != list->end())
   {
     if (isPackageInstalled(*it)) {
       ++installedCount;
@@ -405,7 +405,7 @@ void MainWindow::buildPackagesFromGroupList(const QString &group)
     counter++;
     m_progressWidget->setValue(counter);
     ++it;
-  }
+  }*/
 
   counter = list->count();
   m_progressWidget->setValue(counter);
